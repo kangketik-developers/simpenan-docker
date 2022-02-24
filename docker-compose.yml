@@ -1,0 +1,40 @@
+version: "3.9"
+networks:
+  default:
+    name: vlan_external
+    driver: bridge
+  internal:
+    name: vlan_internal
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+services:
+  frontend:
+    image: ghcr.io/kangketik-developers/simpenan-frontend:main
+    ports:
+      - 3000:3000
+    networks:
+      - internal
+      - default
+  backend:
+    image: ghcr.io/kangketik-developers/simpenan-backend:main
+    volumes:
+      - ./assets/faces:/code/assets/faces
+      - ./assets/qrcodes:/code/assets/qrcodes
+      - ./assets/tf_trained_model:/code/assets/tf_trained_model
+      - ./uploads:/code/uploads
+    networks:
+      - default
+      - internal
+    ports:
+      - "8000:8000"
+  database:
+    image: mongo:latest
+    volumes:
+      - ./data:/data:delegated
+    networks:
+      internal:
+        ipv4_address: 10.10.10.3
+    ports:
+      - "27017:27017"

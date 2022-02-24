@@ -1,0 +1,5 @@
+*
+!.gitignore
+!faces
+!qrcodes
+!tf_trained_model
